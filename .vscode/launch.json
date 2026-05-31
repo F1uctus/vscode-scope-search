@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "extensionDevelopmentPath": "${workspaceFolder}/packages/extension",
+      "args": ["${workspaceFolder}/../unn-rocq-kalman.code-workspace"],
+      "outFiles": ["${workspaceFolder}/packages/extension/dist/**/*.js"]
+    }
+  ]
+}

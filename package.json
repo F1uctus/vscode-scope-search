@@ -1,0 +1,13 @@
+{
+  "name": "vscode-scope-search",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @scope-search/core && npm run build -w scope-search && npm run build -w @scope-search/cli",
+    "test": "npm run test:replacement -w @scope-search/core && npm run test:fallback -w @scope-search/core && npm run test:history -w scope-search && npm run test:history-store -w scope-search",
+    "package": "npm run build && npm run package -w scope-search",
+    "watch": "npm run watch -w scope-search"
+  }
+}

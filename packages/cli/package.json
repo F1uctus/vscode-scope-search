@@ -1,0 +1,19 @@
+{
+  "name": "@scope-search/cli",
+  "version": "0.0.1",
+  "private": true,
+  "bin": {
+    "scope-search": "./dist/main.js"
+  },
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --outfile=dist/main.js --platform=node --format=cjs --banner:js='#!/usr/bin/env node'"
+  },
+  "dependencies": {
+    "@scope-search/core": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.2"
+  }
+}

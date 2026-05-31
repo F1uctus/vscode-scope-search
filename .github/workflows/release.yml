@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run package
+
+      - name: Upload VSIX to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          vsix=(packages/extension/*.vsix)
+          if [ ! -f "${vsix[0]}" ]; then
+            echo "No VSIX produced" >&2
+            exit 1
+          fi
+          gh release create "$tag" "${vsix[0]}" \
+            --title "$tag" \
+            --generate-notes

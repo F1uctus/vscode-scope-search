@@ -1,0 +1,135 @@
+{
+  "name": "scope-search",
+  "displayName": "Scope Search",
+  "description": "Search and replace within semantic scopes (comments by default) using installed language grammars.",
+  "version": "0.1.0",
+  "publisher": "F1uctus",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/F1uctus/vscode-scope-search.git"
+  },
+  "bugs": {
+    "url": "https://github.com/F1uctus/vscode-scope-search/issues"
+  },
+  "homepage": "https://github.com/F1uctus/vscode-scope-search#readme",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "search",
+    "replace",
+    "comments",
+    "scope",
+    "syntax"
+  ],
+  "activationEvents": [
+    "onView:scopeSearch.panel",
+    "onCommand:scopeSearch.run",
+    "onCommand:scopeSearch.focus"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "scopeSearch",
+          "title": "Scope Search",
+          "icon": "media/search.svg"
+        }
+      ]
+    },
+    "views": {
+      "scopeSearch": [
+        {
+          "type": "webview",
+          "id": "scopeSearch.panel",
+          "name": "Scope Search"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "scopeSearch.run",
+        "title": "Scope Search: Run"
+      },
+      {
+        "command": "scopeSearch.focus",
+        "title": "Scope Search: Focus Panel"
+      },
+      {
+        "command": "scopeSearch.stop",
+        "title": "Stop Search",
+        "icon": "$(search-stop)"
+      },
+      {
+        "command": "scopeSearch.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "scopeSearch.clear",
+        "title": "Clear Search Results",
+        "icon": "$(clear-all)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "scopeSearch.stop",
+          "when": "view == scopeSearch.panel && scopeSearch.searching",
+          "group": "navigation@1"
+        },
+        {
+          "command": "scopeSearch.refresh",
+          "when": "view == scopeSearch.panel",
+          "group": "navigation@2"
+        },
+        {
+          "command": "scopeSearch.clear",
+          "when": "view == scopeSearch.panel",
+          "group": "navigation@3"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "scopeSearch.run",
+        "key": "ctrl+shift+alt+f",
+        "mac": "cmd+shift+alt+f"
+      }
+    ],
+    "configuration": {
+      "title": "Scope Search",
+      "properties": {
+        "scopeSearch.preferTreeSitter": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node scripts/copy-codicons.js && node scripts/build-replacement.js && esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --platform=node --format=cjs --sourcemap && node scripts/vendor-runtime.js",
+    "vscode:prepublish": "npm run build --prefix ../..",
+    "package": "vsce package --no-dependencies",
+    "test:history": "esbuild src/replace-history-core.ts --bundle --outfile=dist/replace-history-test.js --platform=node --format=cjs && node scripts/test-replace-history.mjs",
+    "test:history-store": "esbuild src/replace-history-store.ts --bundle --outfile=dist/replace-history-store-test.js --platform=node --format=cjs --alias:vscode=./scripts/vscode-stub.js && node scripts/test-replace-history-store.mjs",
+    "watch": "node scripts/copy-codicons.js && node scripts/build-replacement.js && esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --platform=node --format=cjs --sourcemap --watch"
+  },
+  "dependencies": {
+    "@scope-search/core": "*",
+    "@vscode/codicons": "^0.0.45",
+    "diff": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.9.1",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.2"
+  }
+}

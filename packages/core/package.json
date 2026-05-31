@@ -1,0 +1,30 @@
+{
+  "name": "@scope-search/core",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test:replacement": "npm run build && node scripts/test-replacement.mjs",
+    "test:fallback": "npm run build && node scripts/test-fallback.mjs"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.3",
+    "picomatch": "^4.0.2",
+    "tree-sitter-wasms": "^0.1.13",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2",
+    "web-tree-sitter": "^0.24.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

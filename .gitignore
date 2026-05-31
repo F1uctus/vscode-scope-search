@@ -1,0 +1,6 @@
+node_modules/
+dist/**/*.map
+packages/cli/dist/test.js
+packages/extension/vendor/
+packages/extension/*.vsix
+*.vsix
