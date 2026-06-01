@@ -2,6 +2,10 @@
 
 VS Code extension for searching and replacing within semantic scopes (comments by default), using TextMate grammars and Tree-sitter from installed language extensions.
 
+<p align="center">
+  <img src="assets/replace.png" alt="">
+</p>
+
 ## Install
 
 Download the latest `.vsix` from [GitHub Releases](https://github.com/F1uctus/vscode-scope-search/releases) and install it:
