@@ -62,20 +62,28 @@ export class TextMateBackend {
     return this.registry;
   }
 
-  async extractSpans(languageId: string, text: string): Promise<SemanticSpan[]> {
+  private async loadGrammar(languageId: string): Promise<IGrammar | undefined> {
     const contrib = this.grammarMap.get(languageId);
     if (!contrib) {
-      return [];
+      return undefined;
     }
-    try {
-      const registry = await this.ensureRegistry();
-      let grammar = this.grammarCache.get(contrib.scopeName);
+    const registry = await this.ensureRegistry();
+    let grammar = this.grammarCache.get(contrib.scopeName);
+    if (!grammar) {
+      grammar = await registry.loadGrammar(contrib.scopeName) ?? undefined;
       if (!grammar) {
-        grammar = await registry.loadGrammar(contrib.scopeName) ?? undefined;
-        if (!grammar) {
-          return [];
-        }
-        this.grammarCache.set(contrib.scopeName, grammar);
+        return undefined;
+      }
+      this.grammarCache.set(contrib.scopeName, grammar);
+    }
+    return grammar;
+  }
+
+  async extractSpans(languageId: string, text: string): Promise<SemanticSpan[]> {
+    try {
+      const grammar = await this.loadGrammar(languageId);
+      if (!grammar) {
+        return [];
       }
 
       const spans: SemanticSpan[] = [];
@@ -102,6 +110,42 @@ export class TextMateBackend {
       return spans;
     } catch {
       return [];
+    }
+  }
+
+  /**
+   * TextMate scope stack of the token covering the given document offset.
+   * Tokenization state is line-sequential, so lines are tokenized from the
+   * document start up to the target line.
+   */
+  async scopesAt(languageId: string, text: string, offset: number): Promise<string[] | undefined> {
+    try {
+      const grammar = await this.loadGrammar(languageId);
+      if (!grammar) {
+        return undefined;
+      }
+
+      const lines = text.split('\n');
+      let lineStart = 0;
+      let ruleStack = INITIAL;
+      for (const line of lines) {
+        const lineEnd = lineStart + line.length;
+        const lineTokens = grammar.tokenizeLine(line, ruleStack);
+        if (offset >= lineStart && offset < lineEnd) {
+          const column = offset - lineStart;
+          for (const token of lineTokens.tokens) {
+            if (column >= token.startIndex && column < token.endIndex) {
+              return [...token.scopes];
+            }
+          }
+          return undefined;
+        }
+        ruleStack = lineTokens.ruleStack;
+        lineStart = lineEnd + 1;
+      }
+      return undefined;
+    } catch {
+      return undefined;
     }
   }
 }

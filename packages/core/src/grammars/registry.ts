@@ -72,6 +72,25 @@ export class SpanExtractor {
 
     return dedupeSpans(spans);
   }
+
+  /** TextMate scope stack at a document offset, from the first grammar that yields one. */
+  async getScopesAt(
+    filePath: string,
+    text: string,
+    languageId: string | undefined,
+    offset: number,
+  ): Promise<string[] | undefined> {
+    const langs = grammarLanguageIds(languageId ?? guessLanguageId(filePath), this.grammarMap);
+    for (const lang of langs) {
+      const resolved = resolveLanguageId(lang);
+      const scopes = await this.textmate.scopesAt(resolved, text, offset)
+        ?? (resolved !== lang ? await this.textmate.scopesAt(lang, text, offset) : undefined);
+      if (scopes) {
+        return scopes;
+      }
+    }
+    return undefined;
+  }
 }
 
 export {
