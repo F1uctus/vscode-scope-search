@@ -64,13 +64,9 @@ import { resolveFromModuleRoot, treeSitterWasmsDir } from '../paths';
 export class TreeSitterBackend {
   private initPromise?: Promise<void>;
   private parsers = new Map<string, Parser>();
-  private wasmDir: string;
-  private moduleRoot?: string;
+  private wasmDir: string | undefined;
 
-  constructor(moduleRoot?: string) {
-    this.moduleRoot = moduleRoot;
-    this.wasmDir = treeSitterWasmsDir(moduleRoot);
-  }
+  constructor(private moduleRoot?: string) {}
 
   private async ensureInit(): Promise<void> {
     if (!this.initPromise) {
@@ -95,6 +91,10 @@ export class TreeSitterBackend {
     }
     if (this.parsers.has(languageId)) {
       return this.parsers.get(languageId);
+    }
+    this.wasmDir ??= treeSitterWasmsDir(this.moduleRoot);
+    if (this.wasmDir === undefined) {
+      return undefined;
     }
     await this.ensureInit();
     const wasmPath = path.join(this.wasmDir, 'out', wasmFile);

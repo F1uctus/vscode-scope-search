@@ -30,12 +30,21 @@ export function resolveFromModuleRoot(moduleRoot: string | undefined, pkgPath: s
   return require.resolve(pkgPath);
 }
 
-export function treeSitterWasmsDir(moduleRoot: string | undefined): string {
+/**
+ * Directory of the tree-sitter grammar wasms, or undefined when the optional
+ * tree-sitter-wasms package is not present in the host (backends then report
+ * no parser instead of failing).
+ */
+export function treeSitterWasmsDir(moduleRoot: string | undefined): string | undefined {
   if (moduleRoot) {
     const candidate = path.join(moduleRoot, 'tree-sitter-wasms');
     if (fs.existsSync(candidate)) {
       return candidate;
     }
   }
-  return path.dirname(require.resolve('tree-sitter-wasms/package.json'));
+  try {
+    return path.dirname(require.resolve('tree-sitter-wasms/package.json'));
+  } catch {
+    return undefined;
+  }
 }
