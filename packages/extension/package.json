@@ -129,7 +129,7 @@
     "@types/node": "^22.10.2",
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^3.9.1",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "typescript": "^5.7.2"
   }
 }
